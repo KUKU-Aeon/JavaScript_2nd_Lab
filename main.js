@@ -1,7 +1,15 @@
 let CurrentPerson;
+let aud = new Audio();
 
-let score = makeCounter();
-let miss = makeCounter();
+let score = 0;
+let miss = 0;
+let Timer;
+
+const maxtime = 10,
+      maxscore = 30,
+      maxerror = 3;
+
+let time = maxtime;
 
 let Countries = new Map([
   ["Austria","Vienna"],
@@ -219,37 +227,6 @@ if (CurrentPerson)
     }
 }
 
-
-
-function CheckEndTime() {
-    if (CurrentPerson.IsCorrect)
-    {
-        miss();
-        err++;
-    }
-    else
-    {
-        suc++;
-        score();
-    }
-}
-
-let count = 10;
-let timer;
-
-function countdown(){
-    document.getElementById('timer').innerHTML = "TIMER: " + count;
-    count--;
-    if (count < 0){
-        clearTimeout(timer);
-        count = 10;
-    }
-    else {
-        timer = setTimeout(countdown, 1000);
-    }
-}
-
-
 function Check(el){
 
     if (el === 'pass' && CurrentPerson.IsCorrect)
@@ -264,52 +241,89 @@ function Check(el){
             return false
 }
 
+function WinOrLose()
+{
+    if (miss < maxerror)
+    {
+        if (score === maxscore)
+        {
+            Win();
+        }
+    }
+    else
+    {
+        Lose();
+    }
+}
+function Lose()
+{
+    document.body.style.background = "#eb2f06";
+    aud.src = "audio/lose.mp3";
+    aud.play();
+    aud.loop = false;
+    clearTimeout(Timer);
+
+}
+
+function Win()
+{
+    document.body.style.background = "#05c46b";
+    aud.src = "audio/win.mp3";
+    aud.play();
+    aud.loop = false;
+    clearTimeout(Timer);
+
+}
 
 function MakePerson()
 {
-    if (err < 3 && suc < 30)
-    {
-        countdown();
         NewFace();
         FillBlank();
+}
 
+function Gtimer(){
+    if (time === maxtime) {
+        MakePerson();
+    }
+
+    if (time >= 0) {
+        document.getElementById('timer').innerHTML = "TIME: " + time;
+    }
+
+    if (time-- < 0)
+    {
+        clearTimeout(Timer);
+        document.getElementById('miss').innerHTML = "MISS: " + (miss++);
+
+    if (miss < maxerror)
+        {
+            time = maxtime;
+            Gtimer();
+        }
     }
     else
     {
-        let Task = setInterval(MakePerson, 10000);
-        clearInterval(Task);
+        Timer = setTimeout(Gtimer, 1000);
     }
 }
-
-function makeCounter(){
-
-    let currentCount = 0;
-
-
-    function getCountValue(){
-        currentCount += 1;
-        return currentCount;
-    }
-
-
-    return getCountValue;
-}
-
-let err = 0;
-let suc = 0;
 
 function ButtonPress(e)
 {
+    WinOrLose();
     let el = e.target.id;
     if (Check(el))
     {
-        document.getElementById('score').innerText = "SCORE: " + score();
-        suc++;
+        document.getElementById('score').innerText = "SCORE: " + (score++);
+        clearTimeout(Timer);
+        time = maxtime;
+        Gtimer();
     }
     else
     {
-        document.getElementById('miss').innerText = "MISS: " + miss();
-        err++;
+        document.getElementById('miss').innerText = "MISS: " + (miss++);
+        clearTimeout(Timer);
+        time = maxtime;
+        Gtimer();
     }
 }
 
@@ -363,38 +377,35 @@ class Person{
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    let buttons = document.getElementById('buttons');
-    let start = document.getElementById("start");
-    let menu = document.getElementById("menu");
-    let gamefiled = document.getElementById("gamefield");
+
+  let start = document.getElementById("start");
+  let menu = document.getElementById("menu");
+  let gamefiled = document.getElementById("gamefield");
 
 
-  window.addEventListener('load', function () {
-    let user = prompt("Введите ваше имя...");
-    let greeting = document.getElementById('greeting');
-    greeting.innerHTML = "<p>Поздравляем, " + user + "!</p>" + "<p>Подведены итоги октябрьской лотереи рабочих" +
-    " мест! Вы &ndash;&nbsp;победитель! Немедленно обратитесь в&nbsp;Министерство въезда на пропускном пункте Грештин, чтобы вступить в&nbsp;должность.</p>";
-  });
-
-  let aud = new Audio();
   aud.loop = true;
   aud.src = "audio/menu.mp3";
   aud.play();
 
   start.addEventListener('click', function () {
+    let pass = document.getElementById('pass');
+    let decline = document.getElementById('decline');
     menu.style.display = "none";
     gamefiled.style.display = "block";
     aud.src = "audio/game.mp3";
     aud.play();
-    
-    setInterval(MakePerson, 11000);
 
+    Gtimer();
 
-    buttons.addEventListener("click", function (e) {
+    pass.addEventListener("click", function (e) {
         ButtonPress(e);
     });
-  });
 
+    decline.addEventListener("click", function (e) {
+          ButtonPress(e);
+      });
+
+  });
 
 });
 
