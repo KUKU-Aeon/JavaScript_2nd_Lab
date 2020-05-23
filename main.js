@@ -332,11 +332,13 @@ function Gtimer(){
         {
             miss++;
             document.getElementById('miss').innerHTML = "MISS: " + miss;
+            WinOrLose();
         }
         else
         {
             score++;
             document.getElementById('score').innerHTML = "SCORE: " + score;
+            WinOrLose();
         }
 
     if (miss < maxerror)
