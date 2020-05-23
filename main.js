@@ -264,8 +264,8 @@ function WinOrLose()
 
 function Lose()
 {
+    document.getElementById('lose').style.display = "block";
     document.getElementById('miss').innerHTML = "MISS: " + (miss++);
-    document.body.style.background = "#eb2f06";
     aud.src = "audio/lose.mp3";
     aud.play();
     aud.loop = false;
@@ -278,8 +278,7 @@ function Lose()
 
 function Win()
 {
-
-    document.body.style.background = "#05c46b";
+    document.getElementById('win').style.display = "block";
     aud.src = "audio/win.mp3";
     aud.play();
     aud.loop = false;
