@@ -1,9 +1,14 @@
+document.addEventListener('DOMContentLoaded', function () {
 let CurrentPerson;
 let aud = new Audio();
 
 let score = 0;
 let miss = 0;
 let Timer;
+let once = true;
+
+let pass = document.getElementById('pass');
+let decline = document.getElementById('decline');
 
 const maxtime = 10,
       maxscore = 30,
@@ -170,11 +175,24 @@ function NewFace() {
   face.style.background = 'url("faces/'+ Random(5) + '.jpg") no-repeat';
 }
 
+    function Clear() {
+        if (CurrentPerson)
+        {
+            document.getElementById("FirstName").remove();
+            document.getElementById("LastName").remove();
+            document.getElementById("Country").remove();
+            document.getElementById("Capital").remove();
+            document.getElementById("EnterDate").remove();
+            document.getElementById("ExitDate").remove();
+            document.getElementById("Purpose").remove();
+        }
+    }
+
 function FillBlank() {
 
     Clear();
     CurrentPerson = new Person();
-    console.log(CurrentPerson);
+    console.log(CurrentPerson.IsCorrect);
 
     let doc = document.getElementById('doc');
 
@@ -214,19 +232,6 @@ function FillBlank() {
     doc.appendChild(tmp);
 }
 
-function Clear() {
-if (CurrentPerson)
-    {
-        document.getElementById("FirstName").remove();
-        document.getElementById("LastName").remove();
-        document.getElementById("Country").remove();
-        document.getElementById("Capital").remove();
-        document.getElementById("EnterDate").remove();
-        document.getElementById("ExitDate").remove();
-        document.getElementById("Purpose").remove();
-    }
-}
-
 function Check(el){
 
     if (el === 'pass' && CurrentPerson.IsCorrect)
@@ -243,6 +248,7 @@ function Check(el){
 
 function WinOrLose()
 {
+    ChMus();
     if (miss < maxerror)
     {
         if (score === maxscore)
@@ -255,28 +261,57 @@ function WinOrLose()
         Lose();
     }
 }
+
 function Lose()
 {
+    document.getElementById('miss').innerHTML = "MISS: " + (miss++);
     document.body.style.background = "#eb2f06";
     aud.src = "audio/lose.mp3";
     aud.play();
     aud.loop = false;
+    Clear();
     clearTimeout(Timer);
+    pass.disabled = "true";
+    decline.disabled = "true";
 
 }
 
 function Win()
 {
+
     document.body.style.background = "#05c46b";
     aud.src = "audio/win.mp3";
     aud.play();
     aud.loop = false;
+    Clear();
     clearTimeout(Timer);
+    pass.disabled = "true";
+    decline.disabled = "true";
 
+}
+
+function ChMus() {
+
+    if (once && (miss === 2))
+    {
+        aud.src = "audio/ohno.mp3";
+        aud.play();
+        once = false;
+    }
+    else
+    {
+        if (once && (score >=15))
+        {
+            aud.src = "audio/ohyes.mp3";
+            aud.play();
+            once = false;
+        }
+    }
 }
 
 function MakePerson()
 {
+        WinOrLose();
         NewFace();
         FillBlank();
 }
@@ -293,7 +328,16 @@ function Gtimer(){
     if (time-- < 0)
     {
         clearTimeout(Timer);
-        document.getElementById('miss').innerHTML = "MISS: " + (miss++);
+        if (CurrentPerson.IsCorrect)
+        {
+            miss++;
+            document.getElementById('miss').innerHTML = "MISS: " + miss;
+        }
+        else
+        {
+            score++;
+            document.getElementById('score').innerHTML = "SCORE: " + score;
+        }
 
     if (miss < maxerror)
         {
@@ -309,24 +353,24 @@ function Gtimer(){
 
 function ButtonPress(e)
 {
-    WinOrLose();
     let el = e.target.id;
     if (Check(el))
     {
-        document.getElementById('score').innerText = "SCORE: " + (score++);
+        score++;
+        document.getElementById('score').innerText = "SCORE: " + score;
         clearTimeout(Timer);
         time = maxtime;
         Gtimer();
     }
     else
     {
-        document.getElementById('miss').innerText = "MISS: " + (miss++);
+        miss++;
+        document.getElementById('miss').innerText = "MISS: " + miss;
         clearTimeout(Timer);
         time = maxtime;
         Gtimer();
     }
 }
-
 
 class Person{
   constructor(){
@@ -376,20 +420,15 @@ class Person{
   }
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+
 
   let start = document.getElementById("start");
   let menu = document.getElementById("menu");
   let gamefiled = document.getElementById("gamefield");
 
-
   aud.loop = true;
-  aud.src = "audio/menu.mp3";
-  aud.play();
 
   start.addEventListener('click', function () {
-    let pass = document.getElementById('pass');
-    let decline = document.getElementById('decline');
     menu.style.display = "none";
     gamefiled.style.display = "block";
     aud.src = "audio/game.mp3";
@@ -397,15 +436,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
     Gtimer();
 
+  });
+
     pass.addEventListener("click", function (e) {
         ButtonPress(e);
     });
 
     decline.addEventListener("click", function (e) {
-          ButtonPress(e);
-      });
-
-  });
+        ButtonPress(e);
+    });
 
 });
 
