@@ -265,7 +265,7 @@ function WinOrLose()
 function Lose()
 {
     document.getElementById('lose').style.display = "block";
-    document.getElementById('miss').innerHTML = "MISS: " + (miss++);
+    document.getElementById('miss').innerHTML = "MISS: " + (miss++) + "/" + maxerror;
     aud.src = "audio/lose.mp3";
     aud.play();
     aud.loop = false;
@@ -330,13 +330,13 @@ function Gtimer(){
         if (CurrentPerson.IsCorrect)
         {
             miss++;
-            document.getElementById('miss').innerHTML = "MISS: " + miss;
+            document.getElementById('miss').innerHTML = "MISS: " + miss + "/" + maxerror;
             WinOrLose();
         }
         else
         {
             score++;
-            document.getElementById('score').innerHTML = "SCORE: " + score;
+            document.getElementById('score').innerHTML = "SCORE: " + score + "/" + maxscore;
             WinOrLose();
         }
 
@@ -358,7 +358,7 @@ function ButtonPress(e)
     if (Check(el))
     {
         score++;
-        document.getElementById('score').innerText = "SCORE: " + score;
+        document.getElementById('score').innerText = "SCORE: " + score + "/" + maxscore;
         clearTimeout(Timer);
         time = maxtime;
         Gtimer();
@@ -366,7 +366,7 @@ function ButtonPress(e)
     else
     {
         miss++;
-        document.getElementById('miss').innerText = "MISS: " + miss;
+        document.getElementById('miss').innerText = "MISS: " + miss + "/" + maxerror;
         clearTimeout(Timer);
         time = maxtime;
         Gtimer();
@@ -406,14 +406,14 @@ class Person{
           this.ExitDate.setDate(this.EnterDate.getDate() + differenceDate);
         }
         else{
-          let [pps, dfcDate] = RightLasting();
-          this.Purpose = pps;
+          let [prps, dfcDate] = RightLasting();
+          this.Purpose = prps;
           this.EnterDate = new Date();
-          let dfc = Random(7);
-          if (dfc == 4) dfc = 5;
-          this.EnterDate.setDate(this.EnterDate.getDate() + dfc - 4);
+          let difr = Random(7);
+          if (difr == 4) difr = 5;
+          this.EnterDate.setDate(this.EnterDate.getDate() + difr - 4);
           this.ExitDate = new Date();
-          this.ExitDate.setDate(this.EnterDate.getDate() + dfc - 4);
+          this.ExitDate.setDate(this.EnterDate.getDate() + difr - 4);
         }
       }
       [this.FirstName, this.LastName] = PersonName();
@@ -436,6 +436,14 @@ class Person{
     aud.play();
 
     Gtimer();
+    let help = document.getElementById('help');
+    let curdate = new Date();
+    help.innerHTML = "<p>Curr. Date: " + curdate.getDate() + '.' + (curdate.getMonth() + 1) + "</p> <p>-*-*-*-*-*-*-*-*-*-</p>\n" +
+        "            <p>DIPLOMACY: 10 DAYS</p>\n" +
+        "            <p>WORK: 15 DAYS</p>\n" +
+        "            <p>TOURISM: 3 DAYS</p>\n" +
+        "            <p>VISIT: 5 DAYS</p>\n" +
+        "            <p>SHOPPING: 1 DAY</p>";
 
   });
 
