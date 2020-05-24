@@ -130,7 +130,7 @@ button
     font-size: 80px;
 }
 
-#doc h1, #doc p , #score, #miss, #timer, .help p
+#doc h1, #doc p , #score, #miss, #timer, #help p
 {
     font-family: Pixel, serif;
 }
@@ -142,7 +142,7 @@ button
     margin: 5px 0;
 }
 
-.help
+#help
 {
     background: url("images/help.png");
     width: 250px;
@@ -153,7 +153,7 @@ button
 
 }
 
-.help p
+#help p
 {
     font-size: 35px;
     margin: 5px 0;
